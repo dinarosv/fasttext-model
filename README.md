@@ -1,5 +1,13 @@
 # fasttext-model
 
+## Norec
+
+```
+NoReC: The Norwegian Review Corpus
+Erik Velldal, Lilja Øvrelid, Eivind Alexander Bergem, Cathrine Stadsnes, Samia Touileb, Fredrik Jørgensen
+2018
+http://www.lrec-conf.org/proceedings/lrec2018/pdf/851.pdf
+```
 
 
 # fastText
