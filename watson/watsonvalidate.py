@@ -10,8 +10,8 @@ if __name__ == "__main__":
         iam_apikey=apikeyvalid,
         url='https://gateway-lon.watsonplatform.net/natural-language-understanding/api'
     )
-    with open('text/en_validation.txt') as infile:
-        with open('text/en_result.txt', 'w') as outfile:
+    with open('./text/en_validation.txt') as infile:
+        with open('./text/en_result.txt', 'w') as outfile:
             for index, line in enumerate(infile):
                 response = nlu.analyze(
                     text=line,

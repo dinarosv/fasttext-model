@@ -1,7 +1,6 @@
 from norec import load, html_to_text
 import os
 import string
-import csv
 import re
 
 def get_stop_words():

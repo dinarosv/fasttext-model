@@ -2,7 +2,7 @@
 if __name__ == "__main__":
     corrects = 0
     total = 0
-    with open("text/en_result.txt") as watsonfile, open("text/validation.txt") as validationfile:
+    with open("./text/en_result.txt") as watsonfile, open("./text/validation.txt") as validationfile:
         for x, y in zip(watsonfile, validationfile):
             line = x.strip()
             corrline = y.strip()
