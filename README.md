@@ -1,20 +1,80 @@
-# fasttext-model
+# fastText Modell
 
-## Norec
+Modellen bruker det norske datasettet [NoReC](https://github.com/ltgoslo/norec) for å trene opp en supervised modell basert på
+fastText. Den bruker funksjonen train_supervised() fra fastTexts pythonbibliotek, med parameterene:
+| Epoch | Learning rate | wordNgrams | minCount | dim | bucket   | loss | neg | ws | verbose | minn | maxn |
+|-------|---------------|------------|----------|-----|----------|------|-----|----|---------|------|------|
+| 30    | 0.4           | 5          | 5        | 10  | 20000000 | "ns" | 30  | 10 | 2       | 5    | 6    |
+
+For å teste modellen må du klone prosjektet, kjøre trainmodel.py og deretter testmodel.py i terminalen. 
+
+## Struktur
 
 ```
-NoReC: The Norwegian Review Corpus
-Erik Velldal, Lilja Øvrelid, Eivind Alexander Bergem, Cathrine Stadsnes, Samia Touileb, Fredrik Jørgensen
-2018
-http://www.lrec-conf.org/proceedings/lrec2018/pdf/851.pdf
+MyModel
+├── data (Fra NoReC)
+│   ├── conllu.tar.gz
+│   ├── html.tar.gz
+│   └── metadata.json
+├── norec (Script for å prosessere NoReC, av NoReC)
+│   ├── conllu.py
+│   ├── main.py
+│   └── misc.py
+├── text (Alle tekstfiler)
+│   ├── bestparameteres.txt
+│   ├── en_result.txt
+│   ├── en_validation.txt
+│   ├── otherdata.txt
+│   ├── stopwords.txt
+│   ├── test.txt
+│   ├── testondoc.txt
+│   └── train.txt
+├── watson (Script for å teste med watson. Krever IBM Cloud konto)
+│   ├── watsontesting.py
+│   ├── watsontranslate.py
+│   └── watsonvalidate.py
+├── preprocessing.py
+├── trainmodel.py
+└── testmodel.py
 ```
 
+## Bibliotek
 
-# fastText
+### fastText
+```
+$ pip install fasttext
+```
+Nå kan du importere biblioteket med
+```
+import fastText
+```
+
+### Watson developer cloud
+IBM Watson API for utvikling. [Github Watson-developer-cloud](https://github.com/watson-developer-cloud/python-sdk/tree/master/watson_developer_cloud)
+```
+$ pip install watson-developer-cloud
+```
+Nå kan du importere biblioteket med
+```
+import watson-developer-cloud
+```
+
+### Moduler i python
+```
+import os
+import time
+import sys
+import string
+import csv
+import re
+import json
+```
+
+## fastText
 
 [fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
 
-## Requirements
+### Requirements
 
 [fastText](https://fasttext.cc/) builds on modern Mac OS and Linux distributions.
 Since it uses C\++11 features, it requires a compiler with good C++11 support.
@@ -28,7 +88,7 @@ You will need
 * [NumPy](http://www.numpy.org/) & [SciPy](https://www.scipy.org/)
 * [pybind11](https://github.com/pybind/pybind11)
 
-## Building fastText
+### Building fastText
 
 The easiest way to install fastText is to use [pip](https://pip.pypa.io/en/stable/).
 
@@ -52,7 +112,7 @@ Now you can import this library with
 import fastText
 ```
 
-## Examples
+### Examples
 
 In general it is assumed that the reader already has good knowledge of fastText. For this consider the main [README](https://github.com/facebookresearch/fastText/blob/master/README.md) and in particular [the tutorials on our website](https://fasttext.cc/docs/en/supervised-tutorial.html).
 
@@ -87,7 +147,7 @@ FUNCTIONS
 [...]
 ```
 
-## IMPORTANT: Preprocessing data / enconding conventions
+### IMPORTANT: Preprocessing data / enconding conventions
 
 In general it is important to properly preprocess your data. In particular our example scripts in the [root folder](https://github.com/facebookresearch/fastText) do this.
 

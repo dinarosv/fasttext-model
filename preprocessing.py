@@ -2,6 +2,7 @@ from norec import load, html_to_text
 import os
 import string
 import csv
+import re
 
 def get_stop_words():
     stop_words = []
@@ -25,9 +26,13 @@ def remove_numbers(text):
         text = text.replace(str(n), "")
     return text 
 
+# Prep does the same preprocessing as fasttext in their examples
 def prep(text):
-    text = text.lower().translate(str.maketrans('', '', string.punctuation))
-    text = remove_numbers(text)
+    text = text.lower()
+    punctuations = [".", ",", "/", "'", "\"", "(", ")", "!", "?", ";", ":"]
+    for p in punctuations: 
+        text = text.replace(p, " " + p + " ")
+    text = re.sub(' +', ' ', text)
     return text
 
 def preprocessing(subset, output, testset):
@@ -52,8 +57,11 @@ def preprocessing(subset, output, testset):
         text = remove_spaces(set[0])
         length = len(text)
         
+        #text = text.translate(str.maketrans('', '', string.punctuation))
+        #text = remove_numbers(text)
+
         # Remove unwanted elements in the example
-        prep(text)
+        text = prep(text)
         
         # Choose only the examples who are shorter than 400 to exclude the ones with a lot of gibberish
         if length < 400:
@@ -79,7 +87,7 @@ if __name__ == "__main__":
     os.remove("text/test.txt")
 
     train_length = preprocessing("train", "text/train.txt", False)
-    dev_length = preprocessing("dev", "text/train.txt", True)
+    dev_length = preprocessing("dev", "text/test.txt", True)
     test_length = preprocessing("test", "text/test.txt", True)
     
     print("Total:\t\t" + str(dev_length + test_length + train_length))

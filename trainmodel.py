@@ -7,16 +7,16 @@ from fastText import train_supervised
 import os
 import time
 
-epoch=5         # number of loops through same example {5} [5 - 50]
-lr=0.8          # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
+epoch=30         # number of loops through same example {5} [5 - 50]
+lr=0.4         # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
 wordNgrams=5    # relation to surrounding words [1 - 5]
-minCount=4      # minimal number of word occurrences {5}
-dim=5           # dimension of vectors {100}
-bucket=10000000 # number of buckets {2000000}
-thread=3        # threads
+minCount=5      # minimal number of word occurrences {5}
+dim=10          # dimension of vectors {100}
+bucket=2000000 # number of buckets {2000000}
+thread=3       # threads
 loss="ns"       # loss function {ns, hs, softmax} [ns]
-neg=25           # number of negatives sampled {5}
-ws=5            # window size {5}
+neg=30           # number of negatives sampled {5}
+ws=10            # window size {5}
 verbose=2       # verbosity level {2}
 minn=5          # min length of char ngram [3]
 maxn=6          # max length of char ngram [6]
@@ -36,20 +36,24 @@ params_string = (
         " maxn=" + str(maxn)
     )
 
+# Print the precision and save parameteres to file if precision is over 76%
 def print_results(N, p, r):
     print("Examples:\t" + str(N))
     print("Precision:\t" + str(round(p*100, 2)) + " %")
     if p > 0.76:
-        with open('bestparameters.txt', 'a') as infile:
+        with open('text/bestparameters.txt', 'a') as infile:
             infile.write(str(round(p*100, 2)) + " --- " + params_string + "\n")
 
 if __name__ == "__main__":
     start = time.time()
+
+    #Path to train and test data
     train_data = os.path.join(os.getenv("DATADIR", ''), 'text/train.txt')
-    valid_data = os.path.join(os.getenv("DATADIR", ''), 'text/testing.txt')
+    valid_data = os.path.join(os.getenv("DATADIR", ''), 'text/test.txt')
 
     print('\033[1m'+params_string+'\033[0m')
-    # train_supervised uses the same arguments and defaults as the fastText cli
+
+    # Fasttext's supervised training function
     model = train_supervised(
         input=train_data, 
         epoch=epoch, 
@@ -68,8 +72,10 @@ if __name__ == "__main__":
     )
 
     print_results(*model.test(valid_data))
+    
     #print("Quantizing: ")
     #model.quantize(input=train_data, qnorm=True, retrain=True, cutoff=100000)
+
     model.save_model("model.bin")
 
     end = time.time()
