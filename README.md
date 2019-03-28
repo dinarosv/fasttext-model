@@ -7,7 +7,7 @@ fastText. Den bruker funksjonen train_supervised() fra fastTexts pythonbibliotek
 |-------|---------------|------------|----------|-----|----------|------|-----|----|---------|------|------|
 | 25    | 0.25           | 5          | 5        | 10  | 2000000 | "ns" | 30  | 10 | 2       | 5    | 6    |
 
-Dette ga precision at one (P@1) 65%.
+Dette ga precision at one (P@1) 71%.
 
 For å teste modellen må du klone prosjektet, kjøre trainmodel.py og deretter testmodel.py i terminalen. 
 
