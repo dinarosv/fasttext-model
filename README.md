@@ -5,7 +5,7 @@ fastText. Den bruker funksjonen train_supervised() fra fastTexts pythonbibliotek
 
 | Epoch | Learning rate | wordNgrams | minCount | dim | bucket   | loss | neg | ws | verbose | minn | maxn |
 |-------|---------------|------------|----------|-----|----------|------|-----|----|---------|------|------|
-| 30    | 0.4           | 5          | 5        | 10  | 20000000 | "ns" | 30  | 10 | 2       | 5    | 6    |
+| 25    | 0.25           | 5          | 5        | 10  | 2000000 | "ns" | 30  | 10 | 2       | 5    | 6    |
 
 Dette ga precision at one (P@1) 65%.
 

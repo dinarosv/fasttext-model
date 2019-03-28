@@ -7,19 +7,19 @@ from fastText import train_supervised
 import os
 import time
 
-epoch=30         # number of loops through same example {5} [5 - 50]
-lr=0.4         # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
-wordNgrams=5    # relation to surrounding words [1 - 5]
-minCount=5      # minimal number of word occurrences {5}
-dim=10          # dimension of vectors {100}
-bucket=2000000 # number of buckets {2000000}
-thread=3       # threads
-loss="ns"       # loss function {ns, hs, softmax} [ns]
+epoch=25         # number of loops through same example {5} [5 - 50]
+lr=0.25           # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
+wordNgrams=5     # relation to surrounding words [1 - 5]
+minCount=5       # minimal number of word occurrences {5}
+dim=10           # dimension of vectors {100}
+bucket=2000000   # number of buckets {2000000}
+thread=3         # threads
+loss="ns"        # loss function {ns, hs, softmax} [ns]
 neg=30           # number of negatives sampled {5}
 ws=10            # window size {5}
-verbose=2       # verbosity level {2}
-minn=5          # min length of char ngram [3]
-maxn=6          # max length of char ngram [6]
+verbose=2        # verbosity level {2}
+minn=5           # min length of char ngram [3]
+maxn=6           # max length of char ngram [6]
 
 params_string = (
         "Epoch=" + str(epoch) + 

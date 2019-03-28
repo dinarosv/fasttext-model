@@ -47,36 +47,22 @@ def preprocessing(subset, output, testset):
     if testset: train_file = open(output, "a")
     else: train_file = open(output, "w")
     
-    # To even out dataset for the labels. Since there's only 2200 negative examples, set equally as much positive ones.
-    # Only for the training set
-    pos = 2200
-    neg = 2200
 
     for set in train_set:
         text = remove_spaces(set[0])
-        length = len(text)
-        
-        #text = text.translate(str.maketrans('', '', string.punctuation))
-        #text = remove_numbers(text)
-
+    
         # Remove unwanted elements in the example
         text = prep(text)
         
-        # Choose only the examples who are shorter than 400 to exclude the ones with a lot of gibberish
-        if length < 400:
-            if set[1] > 4:
-                if pos > 0 or testset:
-                    line = '__label__' + str(6) + ' ' + text + '\n'
-                    train_file.write(line)
-                    pos -= 1
-            elif set[1] < 3:
-                if neg > 0 or testset:
-                    line = '__label__' + str(1) + ' ' + text + '\n'
-                    train_file.write(line)
-                    neg -= 1
-            else:
-                line = '__label__' + str(3) + ' ' + text + '\n'
-                train_file.write(line)
+        if set[1] > 4:
+            line = '__label__' + str(6) + ' ' + text + '\n'
+            train_file.write(line)
+        elif set[1] < 3:
+            line = '__label__' + str(1) + ' ' + text + '\n'
+            train_file.write(line)
+        else:
+            line = '__label__' + str(3) + ' ' + text + '\n'
+            train_file.write(line)
 
     train_file.close()
     return number_of_examples
