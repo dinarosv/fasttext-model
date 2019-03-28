@@ -1,10 +1,12 @@
-# fastText Modell
+# fastText modell med NoReC
 
 Modellen bruker det norske datasettet [NoReC](https://github.com/ltgoslo/norec) for å trene opp en supervised modell basert på
 fastText. Den bruker funksjonen train_supervised() fra fastTexts pythonbibliotek, med parameterene:
-| Epoch | Learning rate | wordNgrams | minCount | dim | bucket   | loss | neg | ws | verbose | minn | maxn |
+| Epoch | Learning rate | wordNgrams | minCount | dim | bucket   | loss | neg | ws | verbose | minn | maxn | 
 |-------|---------------|------------|----------|-----|----------|------|-----|----|---------|------|------|
 | 30    | 0.4           | 5          | 5        | 10  | 20000000 | "ns" | 30  | 10 | 2       | 5    | 6    |
+
+Dette ga precision at one (P@1) 65%.
 
 For å teste modellen må du klone prosjektet, kjøre trainmodel.py og deretter testmodel.py i terminalen. 
 
