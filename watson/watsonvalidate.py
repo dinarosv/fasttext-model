@@ -26,11 +26,3 @@ if __name__ == "__main__":
                     outfile.write("__label__3 "+line)
                 if index == 100:
                     break
-    
-    #response = nlu.analyze(
-    #    text='This is a bad text',
-    #    features=Features(sentiment=SentimentOptions())).get_result()
-
-    #print(json.dumps(response, indent=2))
-
-    #print(os.stat('text/en_validation.txt').st_size)

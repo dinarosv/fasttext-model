@@ -52,3 +52,15 @@
 81.4 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
 78.43 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
 82.35 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+81.37 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+81.37 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+81.37 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+81.37 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+82.35 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+81.37 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+81.37 --- Epoch=5 lr=0.5 Ngrams=5 mincount=2 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+78.43 --- Epoch=5 lr=0.5 Ngrams=5 mincount=20 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+82.35 --- Epoch=5 lr=0.5 Ngrams=5 mincount=20 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+82.35 --- Epoch=5 lr=0.5 Ngrams=5 mincount=20 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+78.43 --- Epoch=5 lr=0.5 Ngrams=5 mincount=20 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
+79.41 --- Epoch=5 lr=0.5 Ngrams=5 mincount=20 dim=5 bucket=10000000 loss=ns neg=25 ws=5 verbose=2 minn=5 maxn=6
