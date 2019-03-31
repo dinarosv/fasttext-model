@@ -9,36 +9,34 @@ fastText. Den bruker funksjonen train_supervised() fra fastTexts pythonbibliotek
 
 Dette ga precision at one (P@1) 71%.
 
-For å teste modellen må du klone prosjektet, kjøre trainmodel.py og deretter testmodel.py i terminalen. 
-
 ## Struktur
 
 ```
 MyModel
-├── data (Fra NoReC)
-│   ├── conllu.tar.gz
-│   ├── html.tar.gz
-│   └── metadata.json
-├── norec (Script for å prosessere NoReC, av NoReC)
+├── best_params
+│   ├── amazon.txt
+│   ├── norec_twolabels.txt
+│   └── twitter_no.txt
+├── data
+│   ├── preprocessing.py
+│   └── README.md
+├── norec
 │   ├── conllu.py
 │   ├── main.py
-│   └── misc.py
-├── text (Alle tekstfiler)
-│   ├── bestparameteres.txt
-│   ├── en_result.txt
-│   ├── en_validation.txt
-│   ├── otherdata.txt
-│   ├── stopwords.txt
-│   ├── test.txt
-│   ├── testondoc.txt
-│   └── train.txt
-├── watson (Script for å teste med watson. Krever IBM Cloud konto)
+│   ├── misc.py
+│   └── README.md
+├── watson
 │   ├── watsontesting.py
 │   ├── watsontranslate.py
-│   └── watsonvalidate.py
+│   ├── watsonvalidate.py
+│   └── README.md
+├── .gitignore
 ├── preprocessing.py
+├── testenglishmodel.py
+├── testmodel.py
 ├── trainmodel.py
-└── testmodel.py
+├── twitterprep.py
+└── README.md
 ```
 
 ## Bibliotek

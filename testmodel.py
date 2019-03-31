@@ -14,7 +14,7 @@ def count_labels():
     pos = 0
     neg = 0
     neu = 0
-    with open('text/train.txt') as textfile:
+    with open('data/norec/train.txt') as textfile:
         for line in textfile:
             val = line.split(' ')[0]
             val = val.split('__label__')[1]
@@ -29,26 +29,18 @@ def count_labels():
     print("positive: " + str(pos))
 
 if __name__ == "__main__":
-    count_labels()
-    m = load_model("./model.bin")
+    
+    model = sys.argv[1] or "models/model.bin"
+    m = load_model(model)
 
     text = ""
-
-    #--- Example input on a positive sentiment ---
-    #text = "I dag har det jo vært fakkeltog mot pels, og fy søren så fantastisk det var å se så mange flotte folk engasjere seg."
-
-    # --- Input from file
-    #with open("./text/testondoc.txt") as infile:
-        #  for line in infile:
-        #    text += line
-    #text = text.replace("\n", "")
 
     #--- Input from console ---
     while text != "q":
         print("Type a sentence to analyze and then press ENTER...")
         text = sys.stdin.readline().replace("\n", "")
 
-        prediciton = m.predict(text, 3)
+        prediciton = m.predict(text, 1)
         value = stripName(prediciton)
         prob = strip_prob(prediciton)
 

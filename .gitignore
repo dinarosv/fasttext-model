@@ -1,8 +1,11 @@
+watson/apikeys.py
 apikeys.py
 .DS_Store
 *.bin
 *.vec
 .idea/
 __pycache__/
-data/conllu.tar.gz
-
+*.txt
+*.json
+*.tar.gz
+models/
