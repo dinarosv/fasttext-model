@@ -1,4 +1,4 @@
-# fastText modell med NoReC og andre datasett
+# fastText model with NoReC and other datasets
 
 Train a supervised model with the norwegian dataset [NoReC](https://github.com/ltgoslo/norec) using fastText. We used fastText's python library function train_supervised() with the parameteres:
 
