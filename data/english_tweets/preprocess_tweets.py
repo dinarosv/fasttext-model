@@ -1,32 +1,36 @@
 import csv
+import re
 
-if True:
+def remove_chars(text):
+    remove_names = ["@VirginAmerica", "@virginmedia", "@virginamerica", "@united", "\n"]
+    for name in remove_names:
+        text = text.replace(name, "")
+    text = re.sub(r'\w*http\w*', '', text)
+    text = re.sub(r'\w*@\w*', '', text)
+    return text
+
+if __name__ == "__main__":
     with open('Tweets.csv', mode='r') as csv_file:
-        with open('tweets_prep.txt', "w") as text_file:
-            csv_reader = csv.DictReader(csv_file)
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    print(f'Column names are {", ".join(row)}')
+        with open('train.txt', "w") as train_file:
+            with open('test.txt', "w") as test_file:
+                csv_reader = csv.DictReader(csv_file)
+                line_count = 0
+                for row in csv_reader:
+                    if line_count == 0:
+                        print(f'Column names are {", ".join(row)}')
+                        line_count += 1
+                    
+                    text = row["text"]
+                    text = remove_chars(text)
+                    if row["airline_sentiment"] == "positive":
+                        if line_count < 120001:
+                            train_file.write(f'__label__2 {text}' + "\n")
+                        else:
+                            test_file.write(f'__label__2 {text}' + "\n")
+                    else:
+                        if line_count < 12001:
+                            train_file.write(f'__label__1 {text}' + "\n")
+                        else:
+                            test_file.write(f'__label__1 {text}' + "\n")
                     line_count += 1
-                text = row["text"].replace("@VirginAmerica", "").replace("@virginmedia", "").replace("@virginamerica", "").replace("@united", "").lstrip().replace("\n","")
-                textarray = text.split(" ")
-                newarray = []
-                for word in textarray:
-                    if not "http" in word:
-                        newarray.append(word)
-                text = ' '.join(newarray)        
-                if row["airline_sentiment"] == "positive":
-                    text_file.write(f'__label__2 {text}' + "\n")
-                else:
-                    text_file.write(f'__label__1 {text}' + "\n")
-                line_count += 1
-            print(f'Processed {line_count} lines.')
-
-if False:
-    with open('test.ft.txt') as in_file:
-        with open('cuttest.ft.txt', "w") as out_file:
-            for index, line in enumerate(in_file):
-                out_file.write(line)
-                if index > 4064:
-                    break
+                print(f'Processed {line_count} lines.')

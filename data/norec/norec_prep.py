@@ -1,4 +1,4 @@
-from norec import load, html_to_text
+from scripts import load, html_to_text
 import os
 import string
 import re
@@ -20,12 +20,10 @@ def remove_spaces(text):
     return text.replace('\n', '').replace('-', '').replace('\u00A0', ' ')
 
 def remove_numbers(text): 
-    numb = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    for n in numb:
-        text = text.replace(str(n), "")
+    text = re.sub(r"\d", "", text)  
     return text 
 
-# Prep does the same preprocessing as fasttext in their examples
+# Prep does the same preprocessing as fastText in their examples
 def prep(text):
     text = text.lower()
     punctuations = [".", ",", "/", "'", "\"", "(", ")", "!", "?", ";", ":"]

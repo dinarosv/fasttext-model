@@ -1,4 +1,13 @@
-# norec
+# NoReC: The Norwegian Review Corpus
+
+```
+NoReC: The Norwegian Review Corpus
+Erik Velldal, Lilja Øvrelid, Eivind Alexander Bergem, Cathrine Stadsnes, Samia Touileb, Fredrik Jørgensen
+2018
+http://www.lrec-conf.org/proceedings/lrec2018/pdf/851.pdf
+```
+
+[Link to NoReC Github](https://github.com/ltgoslo/norec)
 
 This package provides a simple interface for working with the NoReC
 dataset.
