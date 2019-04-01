@@ -1,4 +1,4 @@
-from fastText import load_model
+from fasttext import load_model
 import sys
 import os
 from trainmodel import print_results
@@ -14,7 +14,8 @@ def count_labels():
     pos = 0
     neg = 0
     neu = 0
-    with open('data/norec/train.txt') as textfile:
+    trainfile = sys.argv[2] if len(sys.argv) > 3 else 'data/norec/train.txt'
+    with open(trainfile) as textfile:
         for line in textfile:
             val = line.split(' ')[0]
             val = val.split('__label__')[1]
@@ -30,7 +31,7 @@ def count_labels():
 
 if __name__ == "__main__":
     
-    model = sys.argv[1] or "models/model.bin"
+    model = sys.argv[1] if len(sys.argv) > 2 else "models/model.bin"
     m = load_model(model)
 
     text = ""
