@@ -13,5 +13,5 @@ models/
 .env
 package-lock.json
 node_modules/
-!tweets.txt
+!dataset.txt
 stats.json
