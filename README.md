@@ -8,7 +8,7 @@ Train a supervised model with the norwegian dataset [NoReC](https://github.com/l
 
 This resulted in precision at one (P@1) 71%.
 
-## Struktur
+## Project structure
 
 ```
 MyModel
@@ -41,6 +41,12 @@ MyModel
 └── README.md
 ```
 
+## Usage
+To train a model the `trainmodel.py` file use the training dataset to train the model, and test dataset for testing of the models performance.
+```
+python3 trainmodel.py <train dataset> <test dataset> <model filename>.bin
+```
+
 ## Libraries
 
 ### fastText
@@ -63,7 +69,7 @@ Now you can import the library with
 import watson-developer-cloud
 ```
 
-### Moduler i python
+### Python modules
 ```
 import os
 import time
@@ -75,7 +81,7 @@ import json
 ```
 
 ## Dataset
-All the following datasets are described in the directory "data"s README file.
+All the following datasets are described in  `data/README.md`.
 - NoReC: The Norwegian Review Corpus
 - Amazon Reviews for Sentiment Analysis
 - Twitter US Airline Sentiment

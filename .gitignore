@@ -6,7 +6,12 @@ apikeys.py
 .idea/
 __pycache__/
 *.txt
-*.json
+metadata.json
 *.tar.gz
 *.csv
 models/
+.env
+package-lock.json
+node_modules/
+!tweets.txt
+stats.json

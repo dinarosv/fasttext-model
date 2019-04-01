@@ -1,0 +1,38 @@
+{
+  "name": "twitter",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "babel-node src/automate.js",
+    "ta": "babel-node src/twitterAnalyze.js",
+    "tf": "babel-node src/twitterFetch.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dinarosv/fasttext-model.git"
+  },
+  "author": "Andreas Hammer, Dina Rosvoll, Oda Steinland Skaug",
+  "license": "MIT",
+  "dependencies": {
+    "cli-progress": "^2.1.1",
+    "dotenv": "^7.0.0",
+    "emoji-sentiment": "^3.0.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "path": "^0.12.7"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": []
+  }
+}
