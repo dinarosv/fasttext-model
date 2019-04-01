@@ -1,0 +1,2 @@
+0.702 {'epoch': 10, 'lr': 0.5, 'wordNgrams': 5, 'minCount': 7, 'dim': 10, 'bucket': 1000000, 'thread': 3, 'loss': 'ns', 'neg': 25, 'ws': 5, 'verbose': 2, 'minn': 5, 'maxn': 6}
+0.703 {'epoch': 10, 'lr': 0.5, 'wordNgrams': 5, 'minCount': 3, 'dim': 10, 'bucket': 1000000, 'thread': 3, 'loss': 'ns', 'neg': 25, 'ws': 5, 'verbose': 2, 'minn': 5, 'maxn': 6}

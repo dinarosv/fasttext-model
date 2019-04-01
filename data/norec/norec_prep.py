@@ -17,7 +17,7 @@ def remove_stop_words(querytext, stop_words):
     return result
 
 def remove_spaces(text):
-    return text.replace('\n', '').replace('-', '').replace('\u00A0', ' ')
+    return text.replace('\n', ' ').replace('-', ' ').replace('\u00A0', ' ')
 
 def remove_numbers(text): 
     text = re.sub(r"\d", "", text)  
@@ -28,7 +28,7 @@ def prep(text):
     text = text.lower()
     punctuations = [".", ",", "/", "'", "\"", "(", ")", "!", "?", ";", ":"]
     for p in punctuations: 
-        text = text.replace(p, " " + p + " ")
+        text = text.replace(p, " ")
     text = re.sub(' +', ' ', text)
     return text
 
