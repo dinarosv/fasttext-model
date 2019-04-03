@@ -87,7 +87,7 @@ loadLexicon().then((lexicon) => {
       progress.increment(dlen);
       prog += dlen;
       if (args['--automation'])
-        process.stdout.write(`Processing: ${prog}/${args['-n']} - ${(Math.floor((prog/count) * 10000) / 100).toFixed(2)}%`);
+        process.stdout.write(`Processing: ${prog}/${args['-n']} - ${(Math.floor((prog/Number(args['-n'])) * 10000) / 100).toFixed(2)}%`);
       count -= dlen;
       if (since_id === '')
         since_id = data.meta.since_id;

@@ -76,7 +76,11 @@ const f = () => {
       args['--rand-oversampling-labels'].forEach(e => a.push(e));
     }
     console.log('Analyzing tweets');
-    spawn('npm', arg).on('close', () => {
+    ws = spawn('npm', arg);
+    ws.stdout.on('data', (text) => {
+      console.log(text.toString('utf-8'));
+    });
+    ws.on('close', () => {
       console.log('Analysis finished');
         ws = undefined;
     });
