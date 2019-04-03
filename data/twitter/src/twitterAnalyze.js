@@ -3,6 +3,7 @@ import emojis from 'emoji-sentiment';
 import cp from 'cli-progress';
 import readline from 'readline';
 import stream from 'stream';
+import loadLexicon from './loadLexicon';
 
 const as = process.argv.slice(2);
 const args = {};
@@ -65,57 +66,76 @@ const progress = new cp.Bar({
   barsize: 40,
   position: 'center',
 });
-
-fs.createReadStream(__dirname + args['--cache'] + args['--input-file']).on('data', (data) => {
-  for (let i = 0; i < data.length; i++) {
-    if (data[i] == 10)
-      numLines++;
-  }
-}).on('error', e => console.error(e)).on('end', () => {
-  fs.writeFileSync(__dirname + args['--output-file'], '');
-  progress.start(numLines, 0);
-  const rl = readline.createInterface(fs.createReadStream(__dirname + args['--cache'] + args['--input-file']), new stream());
-
-  rl.on('line', (text) => {
-    const analysis = [];
-    for (let i = 0; i < text.length; i++) {
-      if (!text.codePointAt(i))
-        continue;
-      const point = text.codePointAt(i).toString(16);
-      if (point.length < 4)
-        continue;
-      if (es[point]) {
-        analysis.push(es[point]);
-        text = text.slice(0, i) + text.slice(i + 2);
-        i -= 2;
-      }
+loadLexicon().then((lexicon) => {
+  fs.createReadStream(__dirname + args['--cache'] + args['--input-file']).on('data', (data) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] == 10)
+        numLines++;
     }
-    const avg = analysis.reduce((acc, val) => acc + val.score, 0) / analysis.length;
-    let sentiment = '';
-    if (avg > 0.5)
-      sentiment = '__label__6';
-    else if (avg > -0.1)
-      sentiment = '__label__3';
-    else
-      sentiment = '__label__1';
-    let output = '';
-    if (args['--rand-oversampling-labels'].indexOf(sentiment) > -1) {
-      const len = Math.floor(Math.random() * (args['--rand-oversampling-num'][1] - args['--rand-oversampling-num'][0])) + args['--rand-oversampling-num'][0];
-      for (let i = 0; i < len; i++) {
-        output += `${sentiment} ${text}\n`;
+  }).on('error', e => console.error(e)).on('end', () => {
+    fs.writeFileSync(__dirname + args['--output-file'], '');
+    progress.start(numLines, 0);
+    const rl = readline.createInterface(fs.createReadStream(__dirname + args['--cache'] + args['--input-file']), new stream());
+
+    const spread = {};
+    rl.on('line', (text) => {
+      const analysis = [];
+      for (let i = 0; i < text.length; i++) {
+        if (!text.codePointAt(i))
+          continue;
+        const point = text.codePointAt(i).toString(16);
+        if (point.length < 4)
+          continue;
+        if (es[point]) {
+          analysis.push(es[point]);
+          text = text.slice(0, i) + text.slice(i + 2);
+          i -= 2;
+        }
       }
-    }
-    else
-      output = `${sentiment} ${text}\n`;
-    fs.appendFile(__dirname + args['--output-file'], output, () => {
-      progress.increment(1);
+      if (text.length < 10)
+        return;
+      text.split(' ').forEach((word) => {
+        if (lexicon[word])
+          analysis.push({score: lexicon[word]});
+      });
+      const avg = analysis.reduce((acc, val) => acc + val.score, 0) / analysis.length;
+      let sentiment = '';
+      if (avg > 0.3)
+        sentiment = '__label__6';
+      else if (avg > -0.3)
+        sentiment = '__label__3';
+      else
+        sentiment = '__label__1';
+      let output = '';
+      if (args['--rand-oversampling-labels'].indexOf(sentiment) > -1) {
+        const len = Math.floor(Math.random() * (args['--rand-oversampling-num'][1] - args['--rand-oversampling-num'][0])) + args['--rand-oversampling-num'][0];
+        for (let i = 0; i < len; i++) {
+          output += `${sentiment} ${text}\n`;
+        }
+        if (!spread[sentiment])
+          spread[sentiment] = len;
+        else
+          spread[sentiment] += len;
+      }
+      else {
+        output = `${sentiment} ${text}\n`;
+        if (!spread[sentiment])
+          spread[sentiment] = 1;
+        else
+          spread[sentiment]++;
+      }
+      fs.appendFile(__dirname + args['--output-file'], output, () => {
+        progress.increment(1);
+      });
     });
-  });
 
-  rl.on('close', () => {
-    progress.update(numLines);
-    progress.stop();
-  });
+    rl.on('close', () => {
+      progress.update(numLines);
+      progress.stop();
+      console.log('Label spread');
+      Object.keys(spread).forEach(label => console.log(`${label}: ${spread[label]}`));
+    });
 
-  rl.on('error', e => console.error(e));
+    rl.on('error', e => console.error(e));
+  });
 });

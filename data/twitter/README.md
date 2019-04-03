@@ -40,6 +40,7 @@ npm run tf -- -n <number-of-tweets> [other-arguments]
 ```
 --cache <cache-folder>    Default: ./cache
 --ignore-new
+--automation              Used for automated process output
 ```
 
 ### Analyzing tweets

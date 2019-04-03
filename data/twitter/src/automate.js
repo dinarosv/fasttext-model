@@ -26,7 +26,7 @@ Object.keys(args).forEach((key) => {
 let last_run = 0;
 let ws;
 
-const interval = 60 * 60 * 1000;
+const interval = 16 * 60 * 1000;
 
 const f = () => {
   if (ws)
@@ -37,7 +37,7 @@ const f = () => {
     const time = Math.floor((interval - new Date().getTime() + last_run) / 1000);
     return process.stdout.write(`Time till next run: ${Math.floor(time / 60)}min ${time - (Math.floor(time / 60) * 60)}s`);
   }
-  const a = ['run', 'tf', '--'];
+  const a = ['run', 'tf', '--', '--automation'];
   if (args['-n'])
     a.push('-n', args['-n']);
   else
@@ -48,7 +48,11 @@ const f = () => {
     a.push('--ignore-new');
   console.log('Fetching tweets');
   ws = spawn('npm', a);
-  ws.stdout.pipe(process.stdout);
+  ws.stdout.on('data', (data) => {
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    process.stdout.write(data);
+  });
   ws.stderr.pipe(process.stderr);
   ws.on('close', () => {
     console.log('Tweets fetched');
