@@ -23,6 +23,8 @@ Object.keys(args).forEach((key) => {
     args[key] = args[key].split(' ');
 });
 
+console.log(args);
+
 let last_run = 0;
 let ws;
 
@@ -66,15 +68,16 @@ const f = () => {
     else
       arg.push('--output-file', 'dataset.txt');
     if (args['--cache'])
-      a.push('--cache', args['--cache']);
+      arg.push('--cache', args['--cache']);
     if (args['--rand-oversampling-num'] && args['--rand-oversampling-num'].length > 0) {
-      a.push('--rand-oversampling-num');
-      args['--rand-oversampling-num'].forEach(e => a.push(e));
+      arg.push('--rand-oversampling-num');
+      args['--rand-oversampling-num'].forEach(e => arg.push(e));
     }
     if (args['--rand-oversampling-labels'] && args['--rand-oversampling-labels'].length > 0) {
-      a.push('--rand-oversampling-labels');
-      args['--rand-oversampling-labels'].forEach(e => a.push(e));
+      arg.push('--rand-oversampling-labels');
+      args['--rand-oversampling-labels'].forEach(e => arg.push(e));
     }
+    console.log(arg);
     console.log('Analyzing tweets');
     ws = spawn('npm', arg);
     ws.stdout.on('data', (text) => {

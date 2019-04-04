@@ -1149,7 +1149,6 @@ __label__6 høflige
 __label__6 heaven
 __label__6 classic
 __label__6 barmhjertig
-__label__1 i
 __label__1 ikke
 __label__1 sin
 __label__1 ligger
@@ -1161,13 +1160,13 @@ __label__1 døde
 __label__1 lang
 __label__1 lag
 __label__1 stort
-__label__1 vanlig
+__label__3 vanlig
 __label__1 nummer
 __label__1 tross
 __label__1 gift
 __label__1 angrep
 __label__1 drept
-__label__1 høy
+__label__3 høy
 __label__1 grenser
 __label__1 vanskelig
 __label__1 dårlig
