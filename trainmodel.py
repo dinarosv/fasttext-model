@@ -13,27 +13,27 @@ import sys
 # Arguments: Trainfile, testfile, model, bestparameteres
 
 hyper_params = {
-    "epoch": 10,        # number of loops through same example {5} [5 - 50]
-    "lr": 0.5,          # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
+    "epoch": 5,        # number of loops through same example {5} [5 - 50]
+    "lr": 0.05,          # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
     "wordNgrams": 5,    # relation to surrounding words [1 - 5]
-    "minCount": 3,      # minimal number of word occurrences {5}
-    "dim": 10,           # dimension of vectors {100}
+    "minCount": 7,      # minimal number of word occurrences {5}
+    "dim": 50,           # dimension of vectors {100}
     "bucket": 1000000,  # number of buckets {2000000}
     "thread": 3,        # threads
     "loss": "ns",       # loss function {ns, hs, softmax} [ns]
     "neg": 25,          # number of negatives sampled {5}
-    "ws": 5,            # window size {5}
+    "ws": 10,            # window size {5}
     "verbose": 2,       # verbosity level {2}
-    "minn": 5,          # min length of char ngram [3]
-    "maxn": 6           # max length of char ngram [6]
+    "minn": 2,          # min length of char ngram [3]
+    "maxn": 7           # max length of char ngram [6]
 }
 
 # Print the precision and save parameteres to file if precision is over 76%
 def print_results(N, p, r):
     print("Examples:\t" + str(N))
     print("Precision:\t" + str(round(p*100, 2)) + " %")
-    paramfile = sys.argv[4] if len(sys.argv) > 5 else "data/norec/bestparams"
-    if p > 0.69:
+    paramfile = sys.argv[4] if len(sys.argv) > 4 else "data/norec/bestparams"
+    if p > 0.73:
         with open(paramfile, 'a') as infile:
             infile.write(str(round(p, 3)) + " " + str(hyper_params) + "\n")
 

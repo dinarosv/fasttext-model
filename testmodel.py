@@ -1,4 +1,4 @@
-from fasttext import load_model
+from fastText import load_model
 import sys
 import os
 from trainmodel import print_results
@@ -14,7 +14,7 @@ def count_labels():
     pos = 0
     neg = 0
     neu = 0
-    trainfile = sys.argv[2] if len(sys.argv) > 3 else 'data/norec/train.txt'
+    trainfile = sys.argv[2] if len(sys.argv) > 2 else 'data/norec/train.txt'
     with open(trainfile) as textfile:
         for line in textfile:
             val = line.split(' ')[0]
@@ -31,7 +31,7 @@ def count_labels():
 
 if __name__ == "__main__":
     
-    model = sys.argv[1] if len(sys.argv) > 2 else "models/model.bin"
+    model = sys.argv[1] if len(sys.argv) > 1 else "models/model.bin"
     m = load_model(model)
 
     text = ""
@@ -45,10 +45,10 @@ if __name__ == "__main__":
         value = stripName(prediciton)
         prob = strip_prob(prediciton)
 
-        if value == "1" and prob > 0.5:
+        if value == "1":
             print("Value: Negative, Probability: " + str(round(prob, 4)))
-        elif value == "6" and prob > 0.5:
+        elif value == "6":
             print("Value: Positive, Probability: " + str(round(prob, 4)))
         else:
-            print("Value: Neutral")
+            print("Value: Neutral, Probability: " + str(round(prob, 4)))
 
