@@ -23,12 +23,10 @@ Object.keys(args).forEach((key) => {
     args[key] = args[key].split(' ');
 });
 
-console.log(args);
-
 let last_run = 0;
 let ws;
 
-const interval = 16 * 60 * 1000;
+const interval = (args['--interval'] && typeof args['--interval'] === 'string' ? Number(args['--interval']) : 16) * 60 * 1000;
 
 const f = () => {
   if (ws)
@@ -50,15 +48,26 @@ const f = () => {
     a.push('--ignore-new');
   console.log('Fetching tweets');
   ws = spawn('npm', a);
+  let finished = false;
   ws.stdout.on('data', (data) => {
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     process.stdout.write(data);
+    if (data.toString('utf-8').indexOf('Tweets processed: 0') > -1) {
+      finished = true;
+    }
   });
   ws.stderr.pipe(process.stderr);
   ws.on('close', () => {
     console.log('Tweets fetched');
-    const arg = ['run', 'ta', '--'];
+    last_run = new Date().getTime();
+    if (args['--no-analysis']) {
+      ws = undefined;
+      console.log('Amount of data:');
+      spawn('wc', ['-l', 'dataset.txt', 'cache/tweets.txt']).stdout.pipe(process.stdout);
+      return;
+    }
+    const arg = ['run', 'ta', '--', '--automation'];
     if (args['--input-file'])
       arg.push('--input-file', args['--input-file']);
     else
@@ -77,7 +86,6 @@ const f = () => {
       arg.push('--rand-oversampling-labels');
       args['--rand-oversampling-labels'].forEach(e => arg.push(e));
     }
-    console.log(arg);
     console.log('Analyzing tweets');
     ws = spawn('npm', arg);
     ws.stdout.on('data', (text) => {
@@ -85,7 +93,11 @@ const f = () => {
     });
     ws.on('close', () => {
       console.log('Analysis finished');
-        ws = undefined;
+      ws = undefined;
+      console.log('Amount of data:');
+      spawn('wc', ['-l', 'dataset.txt', 'cache/tweets.txt']).stdout.pipe(process.stdout);
+      if (finished)
+        process.exit(0);
     });
     last_run = new Date().getTime();
   });
