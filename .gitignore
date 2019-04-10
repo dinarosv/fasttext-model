@@ -16,3 +16,5 @@ node_modules/
 !dataset.txt
 stats.json
 !lexicon_no.txt
+justtest.py
+!text.ft.txt
