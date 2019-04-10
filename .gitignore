@@ -14,7 +14,13 @@ models/
 package-lock.json
 node_modules/
 !dataset.txt
-stats.json
+stats*.json
 !lexicon_no.txt
 justtest.py
 !text.ft.txt
+!aspell.txt
+!afinn_no.txt
+!common_words.txt
+!cursewords.txt
+test.js
+
