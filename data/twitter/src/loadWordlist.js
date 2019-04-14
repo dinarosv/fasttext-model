@@ -32,7 +32,7 @@ export default wordlistFiles => new Promise((resolve, reject) => {
       progress.start(list.length, 0);
       const newList = list.map(elm => stemWord(elm).toLowerCase()).filter((elm, i) => {
         progress.increment(1);
-        return list.indexOf(elm) === i;
+        return list.indexOf(elm) === i && elm.length > 2;
       });
       progress.stop();
       console.log(`Original list length: ${list.length}`);

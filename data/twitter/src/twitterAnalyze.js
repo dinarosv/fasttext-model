@@ -26,6 +26,15 @@ for (let i = 0; i < as.length; i++) {
   }
 }
 
+const msToString = (ms) => {
+  const hrs = Math.floor(ms / (60 * 60 * 1000));
+  ms -= hrs * 60 * 60 * 1000;
+  const mins = Math.floor(ms / (60 * 1000));
+  ms -= mins * 60 * 1000;
+  const s = Math.floor(ms / 1000);
+  return `${hrs}h ${mins}min ${s}s ${ms - s * 1000}ms`;
+}
+
 Object.keys(args).forEach((key) => {
   if (typeof args[key] === 'string' && args[key].indexOf(' ') > -1)
     args[key] = args[key].split(' ');
@@ -54,10 +63,14 @@ if (args['--cache'].charAt(0) !== '/')
 if (args['--cache'].charAt(args['--cache'].length - 1) !== '/')
   args['--cache'] = `${args['--cache']}/`;
 if (!args['--wordlist'] || typeof args['--wordlist'] !== 'string')
-  args['--wordlist'] = ['aaspell.txt', 'afinn_no.txt', 'cursewords.txt', 'common_words.txt'];
+  args['--wordlist'] = ['aspell.txt', 'afinn_no.txt', 'cursewords.txt', 'common_words.txt'];
 
 args['--cache'] = `/..${args['--cache']}`;
 args['--output-file'] = `/..${args['--output-file']}`;
+if (args['--limit'])
+  args['--limit'] = Number(args['--limit']);
+else
+  args['--limit'] = Number.MAX_VALUE;
 
 const es = {};
 emojis.forEach(e => es[e.sequence.toLowerCase()] = e);
@@ -68,8 +81,9 @@ let lexicon;
 let wordlist;
 let afinn;
 let afinn_keys;
-const spread = {};
-const progress = (() => !args['--automation'] ? new cp.Bar({
+const startTime = new Date().getTime();
+const spread = { '0': 0, '1': 0, '2': 0 };
+let progress = (() => !args['--automation'] ? new cp.Bar({
   barCompleteChar: '=',
   barIncompleteChar: ' ',
   fps: 10,
@@ -77,51 +91,82 @@ const progress = (() => !args['--automation'] ? new cp.Bar({
   barsize: 40,
   position: 'center',
 }) : undefined)();
-
-loadWordlist(args['--wordlist']).then((wl) => {
-  wordlist = wl;
-  loadAfinn().then((afl) => {
-    afinn = afl;
-    afinn_keys = Object.keys(afinn).sort((a, b) => b.length - a.length);
-    loadLexicon().then((r) => {
-      lexicon = r;
-      fs.createReadStream(__dirname + args['--cache'] + args['--input-file']).on('data', (data) => {
-        for (let i = 0; i < data.length; i++) {
-          if (data[i] == 10)
-            numLines++;
-        }
-      }).on('error', e => console.error(e)).on('end', () => {
-        fs.writeFileSync(__dirname + args['--output-file'], 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
-        if (!args['--automation'])
-          progress.start(numLines, 0);
-        const rl = readline.createInterface(fs.createReadStream(__dirname + args['--cache'] + args['--input-file']), new stream());
-
-        rl.on('line', compAnalysis);
-
-        rl.on('close', () => {
-          if (!args['--automation']) {
-            progress.update(numLines);
-            progress.stop();
+const analyze = () => {
+  if (!args['--limit-analyze']) {
+    Object.keys(spread).forEach(key => spread[key] = 0);
+    progress = (() => !args['--automation'] ? new cp.Bar({
+      barCompleteChar: '=',
+      barIncompleteChar: ' ',
+      fps: 10,
+      stream: process.stdout,
+      barsize: 40,
+      position: 'center',
+    }) : undefined)();
+  }
+  loadWordlist(args['--wordlist']).then((wl) => {
+    wordlist = wl;
+    loadAfinn().then((afl) => {
+      afinn = afl;
+      afinn_keys = Object.keys(afinn).sort((a, b) => b.length - a.length);
+      loadLexicon().then((r) => {
+        lexicon = r;
+        numLines = 0;
+        discardedTweets = 0;
+        fs.createReadStream(__dirname + args['--cache'] + args['--input-file']).on('data', (data) => {
+          for (let i = 0; i < data.length; i++) {
+            if (data[i] == 10)
+              numLines++;
           }
-          console.log('Label spread');
-          console.log(spread);
-          const s = Object.keys(spread).sort((a, b) => spread[a] - spread[b]);
-          console.log(`Label separation: ${spread[s[s.length - 1]] - spread[s[0]]}\nLow: ${s[0]}\nHigh: ${s[s.length - 1]}`);
-          console.log(`Discarded tweets: ${discardedTweets}`);
-        });
+        }).on('error', e => console.error(e)).on('end', () => {
+          fs.writeFileSync(__dirname + args['--output-file'], 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
+          if (!args['--automation'])
+            progress.start(numLines, 0);
+          const rl = readline.createInterface(fs.createReadStream(__dirname + args['--cache'] + args['--input-file']), new stream());
 
-        rl.on('error', e => console.error(e));
+          rl.on('line', (tweet) => {
+            if (Object.keys(spread).length > 0 && Object.keys(spread).filter(key => spread[key] < args['--limit']).length === 0)
+              return rl.close();
+            compAnalysis(tweet);
+          });
+
+          rl.on('close', () => {
+            if (!args['--automation']) {
+              progress.update(numLines);
+              progress.stop();
+            }
+            console.log('Label spread');
+            console.log(spread);
+            const s = Object.keys(spread).sort((a, b) => spread[a] - spread[b]);
+            console.log(`Label separation: ${spread[s[s.length - 1]] - spread[s[0]]}\nLow: ${s[0]}\nHigh: ${s[s.length - 1]}`);
+            console.log(`Discarded tweets: ${discardedTweets}`);
+            if (args['--limit-analyze']) {
+              args['--limit'] = spread[Object.keys(spread).sort((a, b) => spread[a] - spread[b])[0]];
+              delete args['--limit-analyze'];
+              analyze();
+            }
+            else
+              console.log(msToString(new Date().getTime() - startTime));
+          });
+
+          rl.on('error', e => console.error(e));
+        });
       });
     });
   });
-});
+}
+
 
 const compAnalysis = (tweet) => {
   let text = tweet.split(';')[0].toLowerCase();
   const meta = tweet.split(';').slice(1).join(';');
   let found = false;
+  const textStemmed = text.split(' ').map(e => stemWord(e));
+  let num = 0;
   for (let i = 0; i < wordlist.length; i++) {
-    if (text.indexOf(wordlist[i]) > -1) {
+    if (textStemmed.filter(w => w.indexOf(wordlist[i]) > -1).length > 0) {
+      num++
+    }
+    if (num >= 2) {
       found = true;
       break;
     }
@@ -196,11 +241,11 @@ const compAnalysis = (tweet) => {
   const avg = analysis.length === 0 ? 0 : analysis.reduce((acc, val) => acc + val.score, 0) / analysis.length;
   let sentiment = '';
   if (avg > Number(args['--interval']))
-    sentiment = '__label__6';
+    sentiment = '2';
   else if (avg > -Number(args['--interval']))
-    sentiment = '__label__3';
+    sentiment = '1';
   else
-    sentiment = '__label__1';
+    sentiment = '0';
   let output = '';
   if (args['--rand-oversampling-labels'].indexOf(sentiment) > -1) {
     const len = Math.floor(Math.random() * (args['--rand-oversampling-num'][1] - args['--rand-oversampling-num'][0])) + args['--rand-oversampling-num'][0];
@@ -219,10 +264,14 @@ const compAnalysis = (tweet) => {
     else
       spread[sentiment]++;
   }
-  fs.appendFile(__dirname + args['--output-file'], output, () => {
-    if (!args['--automation'])
-      progress.increment(1);
-  });
+  if (spread[sentiment] <= args['--limit']) {
+    fs.appendFile(__dirname + args['--output-file'], output, () => {
+      if (!args['--automation'])
+        progress.increment(1);
+    });
+  }
+  else
+    spread[sentiment] = args['--limit'];
 }
 
 const basicAnalysis = (text) => {
@@ -248,11 +297,11 @@ const basicAnalysis = (text) => {
   const avg = analysis.reduce((acc, val) => acc + val.score, 0) / analysis.length;
   let sentiment = '';
   if (avg > 0.3)
-    sentiment = '__label__6';
+    sentiment = '2';
   else if (avg > -0.3)
-    sentiment = '__label__3';
+    sentiment = '1';
   else
-    sentiment = '__label__1';
+    sentiment = '0';
   let output = '';
   if (args['--rand-oversampling-labels'].indexOf(sentiment) > -1) {
     const len = Math.floor(Math.random() * (args['--rand-oversampling-num'][1] - args['--rand-oversampling-num'][0])) + args['--rand-oversampling-num'][0];
@@ -276,3 +325,5 @@ const basicAnalysis = (text) => {
       progress.increment(1);
   });
 }
+
+analyze();
