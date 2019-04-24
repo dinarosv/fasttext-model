@@ -22,5 +22,6 @@ justtest.py
 !afinn_no.txt
 !common_words.txt
 !cursewords.txt
+!ns_dataset.txt
 test.js
 

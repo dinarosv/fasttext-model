@@ -6,6 +6,7 @@ import stream from 'stream';
 import loadLexicon from './loadLexicon';
 import loadAfinn from './loadAfinn';
 import loadWordlist from './loadWordlist';
+import loadPerformance from './loadPerformance';
 import { stemWord } from './snowball_no';
 
 const as = process.argv.slice(2);
@@ -43,6 +44,7 @@ Object.keys(args).forEach((key) => {
 if (!args['--output-file'] || typeof args['--output-file'] !== 'string' || !args['--input-file'] || typeof args['--input-file'] !== 'string')
   throw new Error('Error: must have --output-file and --input-file flags');
 
+args['--output-file-ns'] = `/../ns_${args['--output-file']}`;
 if (args['--output-file'].charAt(0) !== '/')
   args['--output-file'] = `/${args['--output-file']}`;
 
@@ -67,6 +69,10 @@ if (!args['--wordlist'] || typeof args['--wordlist'] !== 'string')
 
 args['--cache'] = `/..${args['--cache']}`;
 args['--output-file'] = `/..${args['--output-file']}`;
+if (!args['--buffer-file'])
+  args['--buffer-file'] = '/../.buffer';
+if (!args['--performance-file'])
+  args['--performance-file'] = '/../.performance';
 if (args['--limit'])
   args['--limit'] = Number(args['--limit']);
 else
@@ -79,8 +85,10 @@ let numLines = 0;
 let discardedTweets = 0;
 let lexicon;
 let wordlist;
+let performance;
 let afinn;
 let afinn_keys;
+const wFreq = {};
 const startTime = new Date().getTime();
 const spread = { '0': 0, '1': 0, '2': 0 };
 let progress = (() => !args['--automation'] ? new cp.Bar({
@@ -91,6 +99,7 @@ let progress = (() => !args['--automation'] ? new cp.Bar({
   barsize: 40,
   position: 'center',
 }) : undefined)();
+
 const analyze = () => {
   if (!args['--limit-analyze']) {
     Object.keys(spread).forEach(key => spread[key] = 0);
@@ -103,52 +112,115 @@ const analyze = () => {
       position: 'center',
     }) : undefined)();
   }
-  loadWordlist(args['--wordlist']).then((wl) => {
-    wordlist = wl;
-    loadAfinn().then((afl) => {
-      afinn = afl;
-      afinn_keys = Object.keys(afinn).sort((a, b) => b.length - a.length);
-      loadLexicon().then((r) => {
-        lexicon = r;
-        numLines = 0;
-        discardedTweets = 0;
-        fs.createReadStream(__dirname + args['--cache'] + args['--input-file']).on('data', (data) => {
-          for (let i = 0; i < data.length; i++) {
-            if (data[i] == 10)
-              numLines++;
-          }
-        }).on('error', e => console.error(e)).on('end', () => {
-          fs.writeFileSync(__dirname + args['--output-file'], 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
-          if (!args['--automation'])
-            progress.start(numLines, 0);
-          const rl = readline.createInterface(fs.createReadStream(__dirname + args['--cache'] + args['--input-file']), new stream());
-
-          rl.on('line', (tweet) => {
-            if (Object.keys(spread).length > 0 && Object.keys(spread).filter(key => spread[key] < args['--limit']).length === 0)
-              return rl.close();
-            compAnalysis(tweet);
-          });
-
-          rl.on('close', () => {
-            if (!args['--automation']) {
-              progress.update(numLines);
-              progress.stop();
+  loadPerformance().then((perf) => {
+    performance = perf;
+    loadWordlist(args['--wordlist']).then((wl) => {
+      wordlist = wl;
+      loadAfinn().then((afl) => {
+        afinn = afl;
+        afinn_keys = Object.keys(afinn).sort((a, b) => b.length - a.length);
+        loadLexicon().then((r) => {
+          lexicon = r;
+          numLines = 0;
+          discardedTweets = 0;
+          fs.createReadStream(__dirname + args['--cache'] + args['--input-file']).on('data', (data) => {
+            for (let i = 0; i < data.length; i++) {
+              if (data[i] == 10)
+                numLines++;
             }
-            console.log('Label spread');
-            console.log(spread);
-            const s = Object.keys(spread).sort((a, b) => spread[a] - spread[b]);
-            console.log(`Label separation: ${spread[s[s.length - 1]] - spread[s[0]]}\nLow: ${s[0]}\nHigh: ${s[s.length - 1]}`);
-            console.log(`Discarded tweets: ${discardedTweets}`);
-            if (args['--limit-analyze']) {
-              args['--limit'] = spread[Object.keys(spread).sort((a, b) => spread[a] - spread[b])[0]];
-              delete args['--limit-analyze'];
-              analyze();
-            }
-            else
-              console.log(msToString(new Date().getTime() - startTime));
-          });
+          }).on('error', e => console.error(e)).on('end', () => {
+            fs.writeFileSync(__dirname + (args['--limit-analyze'] ? args['--buffer-file'] : args['--output-file']), 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
+            if (!args['--automation'])
+              progress.start(numLines, 0);
+            const rl = readline.createInterface(fs.createReadStream(__dirname + args['--cache'] + args['--input-file']), new stream());
 
-          rl.on('error', e => console.error(e));
+            rl.on('line', (tweet) => {
+              if (Object.keys(spread).length > 0 && Object.keys(spread).filter(key => spread[key] < args['--limit']).length === 0)
+                return rl.close();
+              compAnalysis(tweet);
+            });
+
+            rl.on('close', () => {
+              if (!args['--automation']) {
+                progress.update(numLines);
+                progress.stop();
+              }
+              fs.writeFile(__dirname + args['--performance-file'],
+                Object.keys(wFreq)
+                  .sort((a, b) => wFreq[b] - wFreq[a])
+                  .reduce((acc, val) => `${acc}${val}\n`, '')
+                , () => {});
+              console.log('Label spread');
+              console.log(spread);
+              const s = Object.keys(spread).sort((a, b) => spread[a] - spread[b]);
+              console.log(`Label separation: ${spread[s[s.length - 1]] - spread[s[0]]}\nLow: ${s[0]}\nHigh: ${s[s.length - 1]}`);
+              console.log(`Discarded tweets: ${discardedTweets}`);
+              if (args['--limit-analyze']) {
+                const interTime = new Date().getTime();
+                console.log(`First iteration: ${msToString(new Date().getTime() - startTime)}`)
+                args['--limit'] = spread[Object.keys(spread).sort((a, b) => spread[a] - spread[b])[0]];
+                Object.keys(spread).forEach(key => spread[key] = 0);
+                progress = (() => !args['--automation'] ? new cp.Bar({
+                  barCompleteChar: '=',
+                  barIncompleteChar: ' ',
+                  fps: 10,
+                  stream: process.stdout,
+                  barsize: 40,
+                  position: 'center',
+                }) : undefined)();
+                fs.writeFileSync(__dirname + args['--output-file'], 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
+                if (args['--no-stemming'])
+                  fs.writeFileSync(__dirname + args['--output-file-ns'], 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
+                numLines = 0;
+                fs.createReadStream(__dirname + args['--buffer-file']).on('data', (data) => {
+                  for (let i = 0; i < data.length; i++) {
+                    if (data[i] == 10)
+                      numLines++;
+                  }
+                }).on('error', e => console.error(e)).on('end', () => {
+                  if (!args['--automation'])
+                    progress.start(numLines, 0);
+                  const r = readline.createInterface(fs.createReadStream(__dirname + args['--buffer-file']), new stream());
+
+                  r.on('line', (tweet) => {
+                    if (tweet.indexOf('sentiment;text;date;username;location;') > -1 || Object.keys(spread).filter(key => spread[key] !== args['--limit']).length === 0)
+                      return;
+                    const sent = tweet.split(';')[0];
+                    spread[sent]++;
+                    if (!args['--automation'])
+                      progress.increment(1);
+                    if (spread[sent] <= args['--limit']) {
+                      if (args['--no-stemming']) {
+                        fs.appendFile(__dirname + args['--output-file-ns'], `\n${tweet}`, () => {});
+                        let vals = tweet.split(';');
+                        vals[1] = vals[1].split(' ').map(w => stemWord(w)).join(' ');
+                        fs.appendFile(__dirname + args['--output-file'], `\n${vals.join(';')}`, () => {});
+                      }
+                      else
+                        fs.appendFile(__dirname + args['--output-file'], `\n${tweet}`, () => {});
+                    }
+                    else
+                      spread[sent] = args['--limit'];
+                  });
+
+                  r.on('close', () => {
+                    progress.update(numLines);
+                    progress.stop();
+                    fs.unlink(__dirname + args['--buffer-file'], err => {
+                      if (err)
+                        console.error(err);
+                    });
+                    console.log(`Second iteration: ${msToString(new Date().getTime() - interTime)}`);
+                    console.log(`Total: ${msToString(new Date().getTime() - startTime)}`);
+                  });
+                });
+              }
+              else
+                console.log(msToString(new Date().getTime() - startTime));
+            });
+
+            rl.on('error', e => console.error(e));
+          });
         });
       });
     });
@@ -162,13 +234,33 @@ const compAnalysis = (tweet) => {
   let found = false;
   const textStemmed = text.split(' ').map(e => stemWord(e));
   let num = 0;
-  for (let i = 0; i < wordlist.length; i++) {
-    if (textStemmed.filter(w => w.indexOf(wordlist[i]) > -1).length > 0) {
+  for (let i = 0; i < performance.length; i++){
+    if (textStemmed.filter(w => w.indexOf(performance[i]) > -1).length > 0) {
       num++
+      if (!wFreq[performance[i]])
+        wFreq[performance[i]] = 1;
+      else
+        wFreq[performance[i]]++;
     }
     if (num >= 2) {
       found = true;
       break;
+    }
+  }
+  num = 0;
+  if (!found) {
+    for (let i = 0; i < wordlist.length; i++) {
+      if (textStemmed.filter(w => w.indexOf(wordlist[i]) > -1).length > 0) {
+        num++
+        if (!wFreq[wordlist[i]])
+          wFreq[wordlist[i]] = 1;
+        else
+          wFreq[wordlist[i]]++;
+      }
+      if (num >= 2) {
+        found = true;
+        break;
+      }
     }
   }
   if (!found) {
@@ -193,9 +285,7 @@ const compAnalysis = (tweet) => {
       progress.increment(1);
     return;
   }
-  text = text.replace(/[.,;:\-_\?'\(\)\!\…]+/g, ' ').replace(/ +/g, ' ');
-  if (text.charAt(text.length - 1) === ' ')
-    text = text.slice(0, -1);
+  text = text.replace(/[.,;:\-_\?'\(\)\!\…]+/g, ' ').split(' ').filter(w => w !== '').join(' ');
   let dummyText = text;
   afinn_keys.forEach((phrase) => {
     let index = -1;
@@ -233,11 +323,9 @@ const compAnalysis = (tweet) => {
     if (lexicon[word])
       analysis.push({score: lexicon[word]});
   });
-  text = text.split(' ').map(w => {
-    if (w.indexOf('#'))
-      return w.split(/[A-Z]/g).map(ww => stemWord(ww)).join(' ');
-    return stemWord(w);
-  }).join(' ');
+  text = text.replace(/#/g, ' ').split(' ').filter(w => w !== '');
+  let sText = text.map(w => stemWord(w)).join(' ');
+  text = text.join(' ');
   const avg = analysis.length === 0 ? 0 : analysis.reduce((acc, val) => acc + val.score, 0) / analysis.length;
   let sentiment = '';
   if (avg > Number(args['--interval']))
@@ -246,10 +334,12 @@ const compAnalysis = (tweet) => {
     sentiment = '1';
   else
     sentiment = '0';
+  let soutput = '';
   let output = '';
   if (args['--rand-oversampling-labels'].indexOf(sentiment) > -1) {
     const len = Math.floor(Math.random() * (args['--rand-oversampling-num'][1] - args['--rand-oversampling-num'][0])) + args['--rand-oversampling-num'][0];
     for (let i = 0; i < len; i++) {
+      soutput += `\n${sentiment};${sText};${meta}`;
       output += `\n${sentiment};${text};${meta}`;
     }
     if (!spread[sentiment])
@@ -258,20 +348,19 @@ const compAnalysis = (tweet) => {
       spread[sentiment] += len;
   }
   else {
-    output = `\n${sentiment};${text};${meta}`;
+    soutput = `\n${sentiment};${sText};${meta}`;
+    output += `\n${sentiment};${text};${meta}`;
     if (!spread[sentiment])
       spread[sentiment] = 1;
     else
       spread[sentiment]++;
   }
-  if (spread[sentiment] <= args['--limit']) {
-    fs.appendFile(__dirname + args['--output-file'], output, () => {
-      if (!args['--automation'])
-        progress.increment(1);
-    });
-  }
-  else
-    spread[sentiment] = args['--limit'];
+  fs.appendFile(__dirname + (args['--limit-analyze'] ? args['--buffer-file'] : args['--output-file']), args['--no-stemming'] && args['--limit-analyze'] ? output : soutput, () => {
+    if (!args['--automation'])
+      progress.increment(1);
+  });
+  if (args['--no-stemming'] && !args['--limit-analyze'])
+    fs.appendFile(__dirname + args['--output-file-ns'], output, () => {});
 }
 
 const basicAnalysis = (text) => {

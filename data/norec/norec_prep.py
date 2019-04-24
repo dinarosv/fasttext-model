@@ -19,15 +19,15 @@ def remove_stop_words(querytext, stop_words):
 def remove_spaces(text):
     return text.replace('\n', ' ').replace('-', ' ').replace('\u00A0', ' ')
 
-def remove_numbers(text): 
-    text = re.sub(r"\d", "", text)  
-    return text 
+def remove_numbers(text):
+    text = re.sub(r"\d", "", text)
+    return text
 
 # Prep does the same preprocessing as fastText in their examples
 def prep(text):
     text = text.lower()
     punctuations = [".", ",", "/", "'", "\"", "(", ")", "!", "?", ";", ":"]
-    for p in punctuations: 
+    for p in punctuations:
         text = text.replace(p, " ")
     text = re.sub(' +', ' ', text)
     return text
@@ -44,22 +44,22 @@ def preprocessing(subset, output, testset):
     # We will combine validation set and test set to one test set, so we have a 20/80 relationship of the data
     if testset: train_file = open(output, "a")
     else: train_file = open(output, "w")
-    
+
 
     for set in train_set:
         text = remove_spaces(set[0])
-    
+
         # Remove unwanted elements in the example
         text = prep(text)
-        
+
         if set[1] > 4:
-            line = '__label__' + str(6) + ' ' + text + '\n'
+            line = str(2) + ' ' + text + '\n'
             train_file.write(line)
         elif set[1] < 3:
-            line = '__label__' + str(1) + ' ' + text + '\n'
+            line = str(0) + ' ' + text + '\n'
             train_file.write(line)
         else:
-            line = '__label__' + str(3) + ' ' + text + '\n'
+            line = str(1) + ' ' + text + '\n'
             train_file.write(line)
 
     train_file.close()
@@ -67,19 +67,13 @@ def preprocessing(subset, output, testset):
 
 
 if __name__ == "__main__":
-    if os.path.isfile('test.txt'):
-        os.remove("test.txt")
+    if os.path.isfile('train.txt'):
+        os.remove('train.txt')
 
-    train_length = preprocessing("train", "train.txt", False)
-    dev_length = preprocessing("dev", "test.txt", True)
-    test_length = preprocessing("test", "test.txt", True)
-    
+    train_length = preprocessing("train", "train.txt", True)
+    dev_length = preprocessing("dev", "train.txt", True)
+    test_length = preprocessing("test", "train.txt", True)
+
     print("Total:\t\t" + str(dev_length + test_length + train_length))
     print("Test set:\t" + str(dev_length + test_length))
     print("Training set:\t" + str(train_length))
-
-
-
-
-
-
