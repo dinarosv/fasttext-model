@@ -30,3 +30,4 @@
 0.765 {'epoch': 10, 'lr': 0.1, 'wordNgrams': 3, 'minCount': 2, 'dim': 10, 'bucket': 1000000, 'thread': 3, 'loss': 'ns', 'neg': 10, 'ws': 5, 'verbose': 3, 'minn': 5, 'maxn': 6}
 0.765 {'epoch': 5, 'lr': 0.1, 'wordNgrams': 2, 'minCount': 2, 'dim': 10, 'bucket': 1000000, 'thread': 3, 'loss': 'ns', 'neg': 10, 'ws': 5, 'verbose': 3, 'minn': 5, 'maxn': 6}
 0.759 {'epoch': 5, 'lr': 0.1, 'wordNgrams': 5, 'minCount': 2, 'dim': 10, 'bucket': 1000000, 'thread': 3, 'loss': 'ns', 'neg': 10, 'ws': 5, 'verbose': 3, 'minn': 5, 'maxn': 6}
+0.937 {'epoch': 5, 'lr': 0.05, 'wordNgrams': 5, 'minCount': 5, 'dim': 50, 'bucket': 10000000, 'thread': 3, 'loss': 'ns', 'neg': 15, 'ws': 128, 'verbose': 2, 'minn': 5, 'maxn': 7}

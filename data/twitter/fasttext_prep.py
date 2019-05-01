@@ -11,11 +11,12 @@ def prep(text):
     return text
 
 # Split twitter dataset in training and testing with ratio 80/20
-with open("dataset.txt") as infile:
+with open("shuffled_dataset.txt") as infile:
     with open("trainfile.txt", "w") as train:
         with open("testfile.txt", "w") as test:
             for index, line in enumerate(infile):
-                if index < round(361620 * 0.8):
-                    train.write(line)
-                else:
-                    test.write(line)
+                if index != 0:
+                    if index < round(110602 * 0.8):
+                        train.write("__label__" + line.split(";")[0] + " " + line.split(";")[1] + "\n")
+                    else:
+                        test.write("__label__" + line.split(";")[0] + " " + line.split(";")[1] + "\n")

@@ -30,7 +30,7 @@ fs.createReadStream(__dirname + '/train.txt').on('data', (data) => {
   r.on('line', (line) => {
     bar.increment(1);
     const tokens = line.split(' ');
-    const text = tokens.slice(1).filter(w => w.length > 1 || w === 'i').map(w => stemWord(w.replace(/\W/g, '').replace(/_/g, ''))).join(' ');
+    const text = tokens.slice(1).filter(w => w.length > 1 || w === 'i').map(w => stemWord(w.replace(/[^a-zA-Z0-9æøåÆØÅ]/g, ''))).join(' ');
     fs.appendFile(__dirname + '/strain.txt', `${tokens[0]} ${text}\n`, () => {});
   });
 

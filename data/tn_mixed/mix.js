@@ -91,17 +91,22 @@ Promise.all(args['--mix-files'].map(path => new Promise((resolve, reject) => {
   Object.keys(mix).forEach(path => {
     nl += mix[path].length;
   });
+  let ml = {};
+  let prog = 0;
+  console.log(nl);
   bar.start(nl, 0);
   fs.writeFileSync(__dirname + '/mixed.txt', 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
+  let output = '';
   for (let i = 0; i < nl; i++) {
-    const path = mix[Object.keys(mix)[Math.floor(Math.random() * Object.keys(mix).length)]];
-    if (path.length === 0) {
-      i--;
-      continue;
-    }
-    fs.appendFile(__dirname + '/mixed.txt', `\n${path[0]}`, () => {});
-    path.splice(0, 1);
+    const p = Object.keys(mix)[Math.floor(Math.random() * Object.keys(mix).length)];
+    if (!ml[p])
+      ml[p] = 0;
+    output += `\n${mix[p][ml[p]]}`
     bar.increment(1);
+    ml[p]++;
+    if (mix[p].length === ml[p])
+      delete mix[p];
   }
   bar.stop();
+  fs.appendFile(__dirname + '/mixed.txt', output, () => {});
 }).catch(console.error);

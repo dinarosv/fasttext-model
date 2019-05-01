@@ -14,18 +14,18 @@ import sys
 
 hyper_params = {
     "epoch": 5,        # number of loops through same example {5} [5 - 50]
-    "lr": 0.05,          # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
+    "lr": 0.1,          # learning rate {0.05, 0.1, 0.25, 0.5} [0 - 1] {0.05}
     "wordNgrams": 5,    # relation to surrounding words [1 - 5]
-    "minCount": 7,      # minimal number of word occurrences {5}
-    "dim": 50,           # dimension of vectors {100}
-    "bucket": 1000000,  # number of buckets {2000000}
+    "minCount": 5,      # minimal number of word occurrences {5}
+    "dim": 25,           # dimension of vectors {100}
+    "bucket": 2000000,  # number of buckets {2000000}
     "thread": 3,        # threads
     "loss": "ns",       # loss function {ns, hs, softmax} [ns]
-    "neg": 25,          # number of negatives sampled {5}
-    "ws": 10,            # window size {5}
+    "neg": 30,          # number of negatives sampled {5}
+    "ws": 128,            # window size {5}
     "verbose": 2,       # verbosity level {2}
-    "minn": 2,          # min length of char ngram [3]
-    "maxn": 7           # max length of char ngram [6]
+    "minn": 3,          # min length of char ngram [3]
+    "maxn": 6           # max length of char ngram [6]
 }
 
 # Print the precision and save parameteres to file if precision is over 76%
@@ -33,7 +33,7 @@ def print_results(N, p, r):
     print("Examples:\t" + str(N))
     print("Precision:\t" + str(round(p*100, 2)) + " %")
     paramfile = sys.argv[4] if len(sys.argv) > 4 else "data/norec/bestparams"
-    if p > 0.73:
+    if p > 0.70:
         with open(paramfile, 'a') as infile:
             infile.write(str(round(p, 3)) + " " + str(hyper_params) + "\n")
 
@@ -41,9 +41,9 @@ if __name__ == "__main__":
     start = time.time()
 
     length = len(sys.argv)
-    trainfile = sys.argv[1] if length > 2 else "data/norec/train.txt"
-    testfile = sys.argv[2] if length > 3 else "data/norec/test.txt"
-    modelfile = sys.argv[3] if length > 4 else "models/model.bin"
+    trainfile = sys.argv[1] if length > 1 else "data/norec/train.txt"
+    testfile = sys.argv[2] if length > 2 else "data/norec/test.txt"
+    modelfile = sys.argv[3] if length > 3 else "models/model.bin"
 
     # Path to train and test data
     train_data = os.path.join(os.getenv("DATADIR", ''), trainfile)

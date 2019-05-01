@@ -14,7 +14,7 @@ def count_labels():
     pos = 0
     neg = 0
     neu = 0
-    trainfile = sys.argv[2] if len(sys.argv) > 2 else 'data/norec/train.txt'
+    trainfile = sys.argv[2] if len(sys.argv) > 1 else 'data/norec/train.txt'
     with open(trainfile) as textfile:
         for line in textfile:
             val = line.split(' ')[0]
@@ -30,10 +30,12 @@ def count_labels():
     print("positive: " + str(pos))
 
 if __name__ == "__main__":
-    
-    model = sys.argv[1] if len(sys.argv) > 1 else "models/model.bin"
+    model = sys.argv[1] if len(sys.argv) > 0 else "models/model.bin"
     m = load_model(model)
 
+    if len(sys.argv) > 2:
+        test_data = os.path.join(os.getenv("DATADIR", ''), sys.argv[3])
+        print_results(*m.test(test_data))
     text = ""
 
     #--- Input from console ---
@@ -47,7 +49,7 @@ if __name__ == "__main__":
 
         if value == "1":
             print("Value: Negative, Probability: " + str(round(prob, 4)))
-        elif value == "6":
+        elif value == "2":
             print("Value: Positive, Probability: " + str(round(prob, 4)))
         else:
             print("Value: Neutral, Probability: " + str(round(prob, 4)))

@@ -23,11 +23,29 @@ MyModel
 │   │   │   ├── misc.py
 │   │   │   └── README.md (How to use norec scripts)
 │   │   ├── norec_prep.py
+│   │   ├── snowball_no.js
+│   │   ├── package.json
+│   │   ├── stem.js
 │   │   └── README.md (How to download norec)
 │   ├── sentiment_lexicons
 │   ├── stopwords
+│   ├── tn_mixed (Twitter / Norec mixed)
+│   │   ├── fasttext_prep.py
+│   │   ├── mix.js
+│   │   ├── package.json
+│   │   └── shuffleset.py
 │   ├── twitter
-│   │   └── twitterprep.py
+│   │   ├── .performance
+│   │   ├── afinn_no.txt
+│   │   ├── aspell.txt
+│   │   ├── common_words.txt
+│   │   ├── cursewords.txt
+│   │   ├── dataset.txt (This is the norwegian twitter dataset)
+│   │   ├── fasttext_prep.py
+│   │   ├── ns_dataset.txt (Unstemmed dataset)
+│   │   ├── package.json
+│   │   ├── README.md (How to use our norwegian twitter dataset)
+│   │   └── shuffle.py
 │   └── README.md (How to download all datasets)
 ├── watson
 │   ├── watsontesting.py
