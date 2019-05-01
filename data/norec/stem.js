@@ -4,8 +4,8 @@ import Stream from 'stream';
 import cp from 'cli-progress';
 import { stemWord } from './snowball_no';
 
-if (!fs.existsSync(__dirname + '/train.txt'))
-  throw new Error('NO train.txt found');
+if (!fs.existsSync(__dirname + '/ns_dataset.txt'))
+  throw new Error('NO ns_dataset.txt found');
 
 const bar = new cp.Bar({
   barCompleteChar: '=',
@@ -18,20 +18,20 @@ const bar = new cp.Bar({
 
 let numLines = 0;
 
-fs.createReadStream(__dirname + '/train.txt').on('data', (data) => {
+fs.createReadStream(__dirname + '/ns_dataset.txt').on('data', (data) => {
   for (let i = 0; i < data.length; i++) {
     if (data[i] == 10)
       numLines++;
   }
 }).on('error', e => console.error(e)).on('end', () => {
   bar.start(numLines, 0);
-  fs.writeFileSync(__dirname + '/strain.txt', '');
-  const r = readline.createInterface(fs.createReadStream(__dirname + '/train.txt', new Stream()));
+  fs.writeFileSync(__dirname + '/dataset.txt', '');
+  const r = readline.createInterface(fs.createReadStream(__dirname + '/ns_dataset.txt', new Stream()));
   r.on('line', (line) => {
     bar.increment(1);
     const tokens = line.split(' ');
     const text = tokens.slice(1).filter(w => w.length > 1 || w === 'i').map(w => stemWord(w.replace(/[^a-zA-Z0-9æøåÆØÅ]/g, ''))).join(' ');
-    fs.appendFile(__dirname + '/strain.txt', `${tokens[0]} ${text}\n`, () => {});
+    fs.appendFile(__dirname + '/dataset.txt', `${tokens[0]} ${text}\n`, () => {});
   });
 
   r.on('close', () => {
