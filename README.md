@@ -2,9 +2,9 @@
 
 Train a supervised model with the norwegian dataset [NoReC](https://github.com/ltgoslo/norec) using fastText. We used fastText's python library function train_supervised() with the parameteres:
 
-| Epoch | Learning rate | wordNgrams | minCount | dim | bucket   | loss | neg | ws | verbose | minn | maxn |
+| Epoch | Learning rate | wordNgrams | minCount | dim | bucket   | loss | ws | verbose | minn | maxn |
 |-------|---------------|------------|----------|-----|----------|------|-----|----|---------|------|------|
-| 25    | 0.25           | 5          | 5        | 10  | 2000000 | "ns" | 30  | 10 | 2       | 5    | 6    |
+| 25    | 0.25           | 3          | 2        | 10  | 2000000 | "softmax" | 5  | 5    | 6    |
 
 This resulted in precision at one (P@1) 71%.
 
@@ -15,44 +15,19 @@ MyModel
 ├── data
 │   ├── amazon
 │   ├── english_tweets
-│   │   └── preprocess_tweets.py
 │   ├── norec
 │   │   ├── scripts
-│   │   │   ├── conllu.py
-│   │   │   ├── main.py
-│   │   │   ├── misc.py
 │   │   │   └── README.md (How to use norec scripts)
-│   │   ├── norec_prep.py
-│   │   ├── snowball_no.js
-│   │   ├── package.json
-│   │   ├── stem.js
 │   │   └── README.md (How to download norec)
 │   ├── sentiment_lexicons
 │   ├── stopwords
 │   ├── tn_mixed (Twitter / Norec mixed)
-│   │   ├── fasttext_prep.py
-│   │   ├── mix.js
-│   │   ├── package.json
-│   │   └── shuffleset.py
 │   ├── twitter
-│   │   ├── .performance
-│   │   ├── afinn_no.txt
-│   │   ├── aspell.txt
-│   │   ├── common_words.txt
-│   │   ├── cursewords.txt
 │   │   ├── dataset.txt (This is the norwegian twitter dataset)
-│   │   ├── fasttext_prep.py
-│   │   ├── ns_dataset.txt (Unstemmed dataset)
-│   │   ├── package.json
 │   │   ├── README.md (How to use our norwegian twitter dataset)
-│   │   └── shuffle.py
 │   └── README.md (How to download all datasets)
 ├── watson
-│   ├── watsontesting.py
-│   ├── watsontranslate.py
-│   ├── watsonvalidate.py
 │   └── README.md
-├── .gitignore
 ├── testmodel_twolabels.py
 ├── testmodel.py
 ├── trainmodel.py

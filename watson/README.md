@@ -2,11 +2,11 @@
 IBM Watson offers a lot of services for machine learning. Two of those are Natural Language Understanding (NLU) and a Language Translator. These are already trained models which can be used to find the sentiment of a text and the other to translate language.
 ___
 ## Result
-We tried to send 5000 lines of text from the [Amazon dataset](https://www.kaggle.com/bittlingmayer/amazonreviews) to the NLU in separate calls because you can only get one sentiment for each call. We got just over 4000 back before an error returned with Internal Server Error. 
+We tried to send 30 000 lines of text from the [Amazon dataset](https://www.kaggle.com/bittlingmayer/amazonreviews) to the NLU in separate calls because you can only get one sentiment for each call. We got just over 4000 back before an error returned with Internal Server Error. 
 
 We then used our watsontesting.py script to check how many the NLU succeeded to analyze compared to the correct sentiments.
 
-We got a result of 85% accuracy. With fastText trained with Amazon we got 94% precision on the same testset (4000 lines). 
+We got a result of 86% accuracy. With fastText trained with Amazon we got 94% precision on the same testset (30000 lines). 
 
 ---
 ## How to make IBM Cloud account
