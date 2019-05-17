@@ -53,13 +53,14 @@ def preprocessing(subset, output, testset):
         text = prep(text)
 
         if set[1] > 4:
-            line = str(2) + ' ' + text + '\n'
+            line = '__label__' + str(2) + ' ' + text + '\n'
             train_file.write(line)
+            print(str(set[1]) + " - " + text)
         elif set[1] < 3:
-            line = str(0) + ' ' + text + '\n'
+            line = '__label__' + str(0) + ' ' + text + '\n'
             train_file.write(line)
         else:
-            line = str(1) + ' ' + text + '\n'
+            line = '__label__' + str(1) + ' ' + text + '\n'
             train_file.write(line)
 
     train_file.close()
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     if os.path.isfile('test.txt'):
         os.remove('test.txt')
 
-    train_length = preprocessing("train", "train.txt", True)
+    train_length = preprocessing("train", "train.txt", False)
     dev_length = preprocessing("dev", "test.txt", True)
     test_length = preprocessing("test", "test.txt", True)
 

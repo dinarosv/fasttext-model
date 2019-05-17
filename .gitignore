@@ -24,4 +24,6 @@ justtest.py
 !cursewords.txt
 !ns_dataset.txt
 test.js
-
+data/english_tweets/dataset.txt
+data/norec/dataset.txt
+data/norec/ns_dataset.txt
