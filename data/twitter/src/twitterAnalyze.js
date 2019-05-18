@@ -168,9 +168,9 @@ const analyze = () => {
                   barsize: 40,
                   position: 'center',
                 }) : undefined)();
-                fs.writeFileSync(__dirname + args['--output-file'], 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
+                fs.writeFileSync(__dirname + args['--output-file'], 'sentiment;text');
                 if (args['--no-stemming'])
-                  fs.writeFileSync(__dirname + args['--output-file-ns'], 'sentiment;text;date;username;location;follower_count;favorite_count;retweet_count;verified;result_type');
+                  fs.writeFileSync(__dirname + args['--output-file-ns'], 'sentiment;text');
                 numLines = 0;
                 fs.createReadStream(__dirname + args['--buffer-file']).on('data', (data) => {
                   for (let i = 0; i < data.length; i++) {
@@ -183,7 +183,7 @@ const analyze = () => {
                   const r = readline.createInterface(fs.createReadStream(__dirname + args['--buffer-file']), new stream());
 
                   r.on('line', (tweet) => {
-                    if (tweet.indexOf('sentiment;text;date;username;location;') > -1 || Object.keys(spread).filter(key => spread[key] !== args['--limit']).length === 0)
+                    if (tweet.indexOf('sentiment;text') === 0 || Object.keys(spread).filter(key => spread[key] !== args['--limit']).length === 0)
                       return;
                     const sent = tweet.split(';')[0];
                     spread[sent]++;
@@ -339,8 +339,8 @@ const compAnalysis = (tweet) => {
   if (args['--rand-oversampling-labels'].indexOf(sentiment) > -1) {
     const len = Math.floor(Math.random() * (args['--rand-oversampling-num'][1] - args['--rand-oversampling-num'][0])) + args['--rand-oversampling-num'][0];
     for (let i = 0; i < len; i++) {
-      soutput += `\n${sentiment};${sText};${meta}`;
-      output += `\n${sentiment};${text};${meta}`;
+      soutput += `\n${sentiment};${sText}`;
+      output += `\n${sentiment};${text}`;
     }
     if (!spread[sentiment])
       spread[sentiment] = len;
@@ -348,8 +348,8 @@ const compAnalysis = (tweet) => {
       spread[sentiment] += len;
   }
   else {
-    soutput = `\n${sentiment};${sText};${meta}`;
-    output += `\n${sentiment};${text};${meta}`;
+    soutput = `\n${sentiment};${sText}`;
+    output += `\n${sentiment};${text}`;
     if (!spread[sentiment])
       spread[sentiment] = 1;
     else
